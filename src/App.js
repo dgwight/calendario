@@ -50,7 +50,6 @@ function App () {
     if (day.today) {
       names += ' day-today'
     }
-    console.log(day.dayOfMonth, day.times)
     if (!day.times.length) {
       names += ' day-unavailable'
     }
@@ -166,7 +165,7 @@ function getCalendarDates (blocks, timezone, start, duration) {
       return t.users.length && now.unix() + 3600 * 16 < t.unix
     }).sortBy('unix').value()
     return {
-      today: day.isSame(moment(), 'day') ? true : undefined,
+      today: day.isSame(moment(), 'day'),
       day: day.format('YYYY-MM-DD'),
       dayOfMonth: day.format('D'),
       display: day.format('ddd, MMM D'),
