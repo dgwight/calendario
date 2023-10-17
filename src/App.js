@@ -15,34 +15,24 @@ const blocks = [{
 }]
 
 function App () {
-  const [monthMoment, setMonthMoment] = useState(moment())
   const [month, setMonth] = useState(null)
-  const [calendar, setCalendar] = useState(getCalendar(blocks, Intl.DateTimeFormat().resolvedOptions().timeZone, month, 30))
 
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+  const calendar = getCalendar(blocks, timezone, month, 30)
+  const monthMoment = month ? moment(`${month}-01`) : moment()
   const days = get(calendar, 'dates') || []
   const startOfMonth = monthMoment.clone().startOf('month')
   const monthSpacerDays = range(startOfMonth.weekday())
   const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
 
-  const monthBase = startOfMonth.clone().subtract(1, 'month').endOf('month')
-  const previousMonth = monthBase.isAfter(moment()) ? monthBase.format('YYYY-MM') : undefined
-  const nextMonth = moment().add(6, 'month').endOf('month').isAfter(monthBase) ? monthBase.format('YYYY-MM') : undefined
+  let previousMonth = startOfMonth.clone().subtract(1, 'month').endOf('month')
+  previousMonth = previousMonth.isAfter(moment()) ? previousMonth.format('YYYY-MM') : undefined
+  let nextMonth = startOfMonth.clone().add(1, 'month')
+  nextMonth = moment().add(6, 'month').endOf('month').isAfter(nextMonth) ? nextMonth.format('YYYY-MM') : undefined
   const monthDisplay = monthMoment.format('MMMM YYYY')
 
-  function getAvailability () {
-    const calendar = getCalendar([], timezone, month, 30)
-    setCalendar(calendar)
-  }
-
-  function changeMonth (month) {
-    this.month = month
-    this.monthMoment = month ? moment(`${month}-01`) : moment()
-    this.getAvailability()
-  }
-
   function selectDate (day) {
-    // this.$emit('update:day', day)
+    console.log('selectDate', day)
   }
 
   function dayClass (day) {
@@ -56,18 +46,16 @@ function App () {
     return names
   }
 
-  console.log('calendar', calendar, days)
-
   const weekDayItems = weekDays.map(weekDay =>
     <div className="days-width" key={weekDay}>{weekDay}</div>
   )
-  const monthSpacerDayItems = monthSpacerDays.map(spacerDay => {
+  const monthSpacerDayItems = monthSpacerDays.map(spacerDay =>
     <div className="days-width" key={spacerDay}></div>
-  })
+  )
 
   const dayItems = days.map(d =>
     <div key={d.day} className="days-width">
-      <button className="btn-day" disabled={!d.times.length} onClick={selectDate(d)}>
+      <button className="btn-day" disabled={!d.times.length} onClick={() => selectDate(d)}>
         <div className={dayClass(d)}>
           <div className="day-text">
             {d.dayOfMonth}
@@ -79,6 +67,29 @@ function App () {
 
   return (
     <div className="calendar-wrapper">
+      <b-row align-v="center">
+        <b-col>
+          <h3 className="mb-2">
+            {monthDisplay}
+          </h3>
+        </b-col>
+        <b-col cols="auto" className="mb-3">
+          <button variant="default" disabled={!previousMonth} onClick={() => setMonth(previousMonth)}>
+            <svg xmlns="http://www.w3.org/2000/svg" height="1em"
+                 viewBox="0 0 320 512">
+              <path
+                d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l192 192c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256 246.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-192 192z"/>
+            </svg>
+          </button>
+          <button variant="default" disabled={!nextMonth} onClick={() => setMonth(nextMonth)}>
+            <svg xmlns="http://www.w3.org/2000/svg" height="1em"
+                 viewBox="0 0 320 512">
+              <path
+                d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/>
+            </svg>
+          </button>
+        </b-col>
+      </b-row>
       <div>
         {weekDayItems}
       </div>

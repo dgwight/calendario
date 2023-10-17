@@ -57,6 +57,7 @@
     border-radius: 50%;
     border: none;
     color: white;
+    cursor: pointer;
 }
 
 .day-text {
@@ -101,6 +102,7 @@
     color: rgba(0, 0, 0, .4);
     background-color: #ffffff;
     border: none;
+    cursor: default;
 }
 
 .day-today {
